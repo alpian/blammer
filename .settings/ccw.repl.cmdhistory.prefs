@@ -1,0 +1,2 @@
+cmdhistory=["(require [oauth.client \:as oauth])" "(require ['oauth.client \:as 'oauth])" "(require [oauth.client \:as oauth])" "(require ['oauth.client \:as 'oauth])"]
+eclipse.preferences.version=1
