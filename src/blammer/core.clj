@@ -10,7 +10,6 @@
 
 (def access-token "")
 (def users-url "https://www.yammer.com/api/v1/users.json")
-(def messages-url "https://www.yammer.com/api/v1/messages.json")
 
 (defn get-users-by-page [page]
   (let [url (str users-url "?access_token=" access-token "&page=" page)]
@@ -39,9 +38,17 @@
 
 (defn user-table [users]
   [:table 
+   [:tr [:th "Rank"] [:th "Name"] [:th "Kewlness"] [:th "Followers"] [:th "Following"] [:th "Updates"]]
    (map 
-     (fn [user] [:tr [:td (:first_name user)] [:td (:last_name user)] [:td (:kewlness user)]]) 
-     users)])
+     (fn [user rank] [:tr 
+                 [:td rank]
+                 [:td (:first_name user) " " (:last_name user)] 
+                 [:td (:kewlness user)]
+                 [:td (-> user :stats :followers)]
+                 [:td (-> user :stats :following)]
+                 [:td (-> user :stats :updates)]]) 
+     users
+     (map inc (range)))])
 
 (defn make-routes [] 
   (wrap-params 
@@ -51,13 +58,12 @@
            :headers { "Content-Type" "text/html;charset=UTF-8" } 
            :body (html
                    [:head (include-css "/css/style.css")]
-                   [:body [:h1 "The Kewlness"] (user-table (kewlness-rank))])})
+                   [:body 
+                    [:h1 "The Kewlness"]
+                    [:p [:em "kewlness = (followers - following) * updates"]]
+                    (user-table (kewlness-rank))])})
       (resources "/"))))
 
-(defn http-server [routes port] 
-  (run-jetty routes {:port port :join? false}))
-
-(defn start-http-server [port] (.start (http-server (make-routes) port)))
-
 (defn -main [& args]
-  (start-http-server 8082))
+  (let [port (Integer/parseInt (first args))] 
+    (.start (run-jetty (make-routes) {:port port :join? false}))))

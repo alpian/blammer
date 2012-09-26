@@ -5,7 +5,12 @@ table {
 
 td {
   border-width: 0px;
-  padding: 3px;
+  padding: 5px;
+}
+
+th {
+  border-width: 0px;
+  padding: 5px;
 }
 
 tr {
